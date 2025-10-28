@@ -4,14 +4,13 @@ import { peopleFromServer } from './data/people';
 
 import classNames from 'classnames';
 import { DropdownMenu } from './components/DropdownMenu';
+import { Person } from './types/Person';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [appliedQuery, setApliedQuery] = useState('');
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [personName, setPersonName] = useState('');
-  const [personBorn, setPersonBorn] = useState('');
-  const [personDied, setPersonDied] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const timerId = useRef(0);
   const inputField = useRef<HTMLInputElement>(null);
@@ -24,10 +23,7 @@ export const App: React.FC = () => {
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
-
-    setPersonName('');
-    setPersonBorn('');
-    setPersonDied('');
+    setSelectedPerson(null);
 
     window.clearTimeout(timerId.current);
 
@@ -37,7 +33,7 @@ export const App: React.FC = () => {
   };
 
   const filteredPeople = useMemo(() => {
-    if (appliedQuery) {
+    if (appliedQuery.trim().length > 0) {
       return peopleFromServer.filter(ppl =>
         ppl.name
           .toLowerCase()
@@ -53,8 +49,8 @@ export const App: React.FC = () => {
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
         <h1 className="title" data-cy="title">
-          {personName && personBorn && personDied
-            ? `${personName} (${personBorn} - ${personDied})`
+          {selectedPerson
+            ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
             : `No selected person`}
         </h1>
 
@@ -78,9 +74,7 @@ export const App: React.FC = () => {
 
           <DropdownMenu
             people={filteredPeople}
-            onName={setPersonName}
-            onBorn={setPersonBorn}
-            onDied={setPersonDied}
+            onSelected={setSelectedPerson}
             onQuery={setQuery}
             menu={setMenuIsOpen}
           />

@@ -3,35 +3,29 @@ import { Person } from '../types/Person';
 
 type Props = {
   people: Person[];
-  onName: (person: string) => void;
-  onBorn: (person: string) => void;
-  onDied: (person: string) => void;
+  onSelected: (person: Person) => void;
   onQuery: (prop: string) => void;
   menu: (isOpen: boolean) => void;
 };
 
 const DropdownMenuComponent: React.FC<Props> = ({
   people,
-  onName,
-  onBorn,
-  onDied,
+  onSelected,
   onQuery,
   menu,
 }) => {
   return (
     <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
       <div className="dropdown-content">
-        {people.map((ppl, i) => (
+        {people.map(ppl => (
           <div
             className="dropdown-item"
-            key={i}
+            key={ppl.slug}
             style={{ cursor: 'pointer' }}
             data-cy="suggestion-item"
             onClick={() => {
-              onName(ppl.name);
-              onBorn(String(ppl.born));
-              onDied(String(ppl.died));
-              onQuery('');
+              onSelected(ppl);
+              onQuery(ppl.name);
               menu(false);
             }}
           >
